@@ -13,6 +13,7 @@ interface ICheckableResultProps {
 
 export const CheckableResult: React.FC<ICheckableResultProps> = ({ item, onAnswerSet, disabled }) => {
 	const [answer, setAnswer] = React.useState<CheckResultValueEnum>();
+	const [focused, setFocused] = React.useState(false);
 	const handleSetAnswer = (answer: CheckResultValueEnum) => () => {
 		setAnswer(() => answer);
 		onAnswerSet({
@@ -20,13 +21,23 @@ export const CheckableResult: React.FC<ICheckableResultProps> = ({ item, onAnswe
 			value: answer
 		});
 	};
+
+	const handleFocus = () => {
+		setFocused(true);
+	};
+	const handleBlur = () => {
+		setFocused(false);
+	};
 	return (
 		<div
 			className={classnames(styles.wrapper, {
 				[styles.disabled]: disabled,
-				[styles.answered]: !!answer
+				[styles.answered]: !!answer,
+				[styles.focused]: focused
 			})}
 			tabIndex={-1}
+			onFocus={handleFocus}
+			onBlur={handleBlur}
 		>
 			<div className={styles.title}>
 				{item.priority} - {item.description}

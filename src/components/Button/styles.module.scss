@@ -10,6 +10,10 @@
     cursor: pointer;
     border: 1px solid var(--primary-color);
 
+    &:hover, &:focus {
+      background-color: var(--highlight-color);
+    }
+
     &.primary {
       border: 1px solid transparent;
       background-color: var(--primary-color);
