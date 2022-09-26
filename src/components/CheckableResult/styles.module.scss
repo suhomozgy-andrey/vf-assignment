@@ -6,6 +6,10 @@
         background-color: #eee;    
     }
 
+    &:focus {
+        outline: none;
+    }
+
     &.answered, &.answered:hover {
         background-color: var(--highlight-color);
     }

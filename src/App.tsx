@@ -4,6 +4,7 @@ import { CheckResultValueEnum, fetchChecks, ICheckResultItem, ICheckResultSubmit
 import { CheckableResult } from './components/CheckableResult';
 import { Button } from './components/Button';
 import styles from './App.module.scss';
+import { useRoveFocus } from './hooks/useRoveFocus';
 
 const App = () => {
 	const [submitted, setSubmitted] = React.useState<boolean>(false);
@@ -59,6 +60,13 @@ const App = () => {
 		setSubmitted(true);
 	}, [answers, isReadyForSubmit]);
 
+	const { currentFocus, setCurrentFocus } = useRoveFocus(
+		preparedItems.map((item) => ({
+			id: item.id,
+			disabled: !isItemEnabled(item.id)
+		}))
+	);
+
 	return (
 		<div className={styles.app}>
 			{!submitted && (
@@ -74,6 +82,8 @@ const App = () => {
 										key={resultItem.id}
 										item={resultItem}
 										disabled={!isItemEnabled(resultItem.id)}
+										setFocus={setCurrentFocus}
+										focus={currentFocus === resultItem.id}
 									/>
 								))}
 							</div>
