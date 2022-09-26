@@ -4,9 +4,14 @@ export interface ICheckResultItem {
 	description: string;
 }
 
+export enum CheckResultValueEnum {
+	YES = 'yes',
+	NO = 'no'
+}
+
 export interface ICheckResultSubmitItem {
 	checkId: string;
-	value: 'yes' | 'no';
+	value: CheckResultValueEnum;
 }
 
 export const fetchChecks = (): Promise<Array<ICheckResultItem>> => {

@@ -1,3 +1,36 @@
 .wrapper {
+    padding: 8px;
+    border-radius: 4px;
+
+    &:not(.disabled):hover, &:not(.disabled):focus {
+        background-color: #eee;    
+    }
+
+    &.answered, &.answered:hover {
+        background-color: var(--highlight-color);
+    }
+
+    &.disabled {
+        opacity: 0.5;
+    }
+
+    .title {
+        margin-bottom: 8px;
+    }
+
+    .button {
+        &:first-child {
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
     
+        & + .button {
+            border-left: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }  
+      
 }
+
