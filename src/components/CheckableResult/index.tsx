@@ -23,12 +23,17 @@ export const CheckableResult: React.FC<ICheckableResultProps> = ({
 	answer
 }) => {
 	const [focused, setFocused] = React.useState(false);
-	const handleSetAnswer = (answer: CheckResultValueEnum) => () => {
-		onAnswerSet({
-			checkId: item.id,
-			value: answer
-		});
-	};
+	const handleSetAnswer = React.useCallback(
+		(answer: CheckResultValueEnum) => () => {
+			console.log('answer', answer);
+
+			onAnswerSet({
+				checkId: item.id,
+				value: answer
+			});
+		},
+		[item.id, onAnswerSet]
+	);
 
 	const handleFocus = () => {
 		if (disabled) return;
@@ -49,6 +54,29 @@ export const CheckableResult: React.FC<ICheckableResultProps> = ({
 		if (disabled) return;
 		setFocus(item.id);
 	}, [disabled, setFocus, item.id]);
+
+	const handleKeyDown = React.useCallback(
+		(e: KeyboardEvent) => {
+			const key = e.key || e.keyCode;
+
+			if (key === 49 || key === '1') {
+				handleSetAnswer(CheckResultValueEnum.YES)();
+				e.preventDefault();
+			} else if (key === 50 || key === '2') {
+				handleSetAnswer(CheckResultValueEnum.NO)();
+				e.preventDefault();
+			}
+		},
+		[handleSetAnswer]
+	);
+
+	React.useEffect(() => {
+		const currentRef = ref?.current;
+		currentRef?.addEventListener('keydown', handleKeyDown, false);
+		return () => {
+			currentRef?.removeEventListener('keydown', handleKeyDown, false);
+		};
+	}, [handleKeyDown]);
 
 	return (
 		<div
