@@ -25,8 +25,6 @@ export const CheckableResult: React.FC<ICheckableResultProps> = ({
 	const [focused, setFocused] = React.useState(false);
 	const handleSetAnswer = React.useCallback(
 		(answer: CheckResultValueEnum) => () => {
-			console.log('answer', answer);
-
 			onAnswerSet({
 				checkId: item.id,
 				value: answer
