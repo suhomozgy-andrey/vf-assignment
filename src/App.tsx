@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { CheckResultValueEnum, fetchChecks, ICheckResultItem, ICheckResultSubmitItem } from './api';
+import { CheckResultValueEnum, fetchChecks, ICheckResultItem, ICheckResultSubmitItem, submitCheckResults } from './api';
 import { CheckableResult } from './components/CheckableResult';
 import { Button } from './components/Button';
 import styles from './App.module.scss';
@@ -8,6 +8,8 @@ import { useRoveFocus } from './hooks/useRoveFocus';
 
 const App = () => {
 	const [submitted, setSubmitted] = React.useState<boolean>(false);
+	const [submitError, setSubmitError] = React.useState<string>();
+	const [submitting, setSubmitting] = React.useState<boolean>(false);
 	const [loading, setLoading] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<unknown>(null);
 	const [items, setItems] = React.useState<Array<ICheckResultItem>>([]);
@@ -55,9 +57,23 @@ const App = () => {
 
 	const handleSubmit = React.useCallback(() => {
 		if (!isReadyForSubmit) return;
-		console.log('answers', answers);
-
-		setSubmitted(true);
+		setSubmitting(true);
+		setSubmitError(undefined);
+		submitCheckResults(
+			Object.keys(answers).map((key) => ({
+				checkId: key,
+				value: answers[key]
+			}))
+		)
+			.then(() => {
+				setSubmitting(false);
+				setSubmitted(true);
+			})
+			.catch((error) => {
+				setSubmitting(false);
+				setSubmitError('Submission failed, please try again...');
+				console.error(error);
+			});
 	}, [answers, isReadyForSubmit]);
 
 	const { currentFocus, setCurrentFocus } = useRoveFocus(
@@ -87,18 +103,17 @@ const App = () => {
 									/>
 								))}
 							</div>
+							{submitError && <>{submitError}</>}
 							<Button
 								variant='primary'
-								disabled={!isReadyForSubmit}
+								disabled={!isReadyForSubmit || submitting}
 								className={styles.submitButton}
 								onClick={handleSubmit}
 							>
-								Submit
+								{submitting ? 'Please wait...' : 'Submit'}
 							</Button>
 						</div>
 					)}
-					<br />
-					{Object.values(answers).length > 0 && <code>{JSON.stringify(answers, null, 2)}</code>}
 				</>
 			)}
 			{submitted && <div>Submitted successfully!</div>}

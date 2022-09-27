@@ -47,7 +47,7 @@ export const fetchChecks = (): Promise<Array<ICheckResultItem>> => {
 	);
 };
 
-export const submitCheckResults = (results: ICheckResultSubmitItem): Promise<ICheckResultSubmitItem> => {
+export const submitCheckResults = (results: ICheckResultSubmitItem[]): Promise<ICheckResultSubmitItem[]> => {
 	return new Promise((resolve, reject) =>
 		setTimeout(() => (Math.random() <= 0.8 ? resolve(results) : reject({ success: false })), 500)
 	);
