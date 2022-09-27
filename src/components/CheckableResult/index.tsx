@@ -8,16 +8,22 @@ import styles from './styles.module.scss';
 interface ICheckableResultProps {
 	item: ICheckResultItem;
 	onAnswerSet: (result: ICheckResultSubmitItem) => void;
+	answer?: CheckResultValueEnum;
 	disabled?: boolean;
 	focus: boolean;
 	setFocus: React.Dispatch<React.SetStateAction<string> | string>;
 }
 
-export const CheckableResult: React.FC<ICheckableResultProps> = ({ item, onAnswerSet, disabled, focus, setFocus }) => {
-	const [answer, setAnswer] = React.useState<CheckResultValueEnum>();
+export const CheckableResult: React.FC<ICheckableResultProps> = ({
+	item,
+	onAnswerSet,
+	disabled,
+	focus,
+	setFocus,
+	answer
+}) => {
 	const [focused, setFocused] = React.useState(false);
 	const handleSetAnswer = (answer: CheckResultValueEnum) => () => {
-		setAnswer(() => answer);
 		onAnswerSet({
 			checkId: item.id,
 			value: answer
@@ -57,9 +63,7 @@ export const CheckableResult: React.FC<ICheckableResultProps> = ({ item, onAnswe
 			ref={ref}
 			onKeyPress={handleSelect}
 		>
-			<div className={styles.title}>
-				{item.priority} - {item.description}
-			</div>
+			<div className={styles.title}>{item.description}</div>
 			<div>
 				<Button
 					className={classnames(styles.button)}

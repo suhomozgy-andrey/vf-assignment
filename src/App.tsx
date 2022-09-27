@@ -32,31 +32,31 @@ const App = () => {
 	const [answers, setAnswers] = React.useState<Record<string, CheckResultValueEnum>>({});
 
 	const isItemEnabled = React.useCallback(
-		(id: string) => {
+		(id: string): boolean => {
 			if (preparedItems[0].id === id) return true;
 
 			const currentItemIndex = preparedItems.findIndex((item) => item.id === id);
-
+			const previousAnswer = preparedItems[currentItemIndex - 1];
 			return (
-				Object.keys(answers).includes(preparedItems[currentItemIndex - 1].id) &&
-				answers[preparedItems[currentItemIndex - 1].id] === CheckResultValueEnum.YES
+				Object.keys(answers).includes(previousAnswer.id) &&
+				answers[previousAnswer.id] === CheckResultValueEnum.YES &&
+				isItemEnabled(previousAnswer.id)
 			);
 		},
 		[preparedItems, answers]
 	);
 
-	const isReadyForSubmit =
-		Object.values(answers).length > 0 &&
-		(Object.values(answers).some((answer) => answer === CheckResultValueEnum.NO) ||
-			(Object.values(answers).every((answer) => answer === CheckResultValueEnum.YES) &&
-				Object.values(answers).length === items?.length));
+	const isReadyForSubmit = React.useCallback(() => {
+		const answerValues = Object.values(answers);
+		return answerValues.length === items?.length || answerValues.some((answer) => answer === CheckResultValueEnum.NO);
+	}, [answers, items?.length]);
 
 	const handleSetAnswer = (answer: ICheckResultSubmitItem) => {
 		setAnswers((answers) => ({ ...answers, [answer.checkId]: answer.value }));
 	};
 
 	const handleSubmit = React.useCallback(() => {
-		if (!isReadyForSubmit) return;
+		if (!isReadyForSubmit()) return;
 		setSubmitting(true);
 		setSubmitError(undefined);
 		submitCheckResults(
@@ -65,7 +65,9 @@ const App = () => {
 				value: answers[key]
 			}))
 		)
-			.then(() => {
+			.then((data) => {
+				console.log('Submitted answers: ', data);
+
 				setSubmitting(false);
 				setSubmitted(true);
 			})
@@ -100,13 +102,14 @@ const App = () => {
 										disabled={!isItemEnabled(resultItem.id)}
 										setFocus={setCurrentFocus}
 										focus={currentFocus === resultItem.id}
+										answer={answers[resultItem.id]}
 									/>
 								))}
 							</div>
 							{submitError && <>{submitError}</>}
 							<Button
 								variant='primary'
-								disabled={!isReadyForSubmit || submitting}
+								disabled={!isReadyForSubmit() || submitting}
 								className={styles.submitButton}
 								onClick={handleSubmit}
 							>
