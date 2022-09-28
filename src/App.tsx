@@ -4,6 +4,9 @@ import styles from './App.module.scss';
 import { useRoveFocus } from './hooks/useRoveFocus';
 import { useGetQuestions } from './hooks/useGetQuestions';
 import { useSubmitAnswers } from './hooks/useSubmitAnswers';
+import { SubmitError } from './components/SubmitError';
+import { Loader } from './components/Loader';
+import { FetchError } from './components/FetchError';
 
 const App = () => {
 	const { loading: questionsLoading, error: fetchError, preparedQuestions } = useGetQuestions();
@@ -31,8 +34,8 @@ const App = () => {
 		<div className={styles.app}>
 			{!submitted && (
 				<>
-					{!!fetchError && <div>Error happened, please refresh the page</div>}
-					{!fetchError && questionsLoading && preparedQuestions.length === 0 && <span>Loading...</span>}
+					<FetchError active={!!fetchError} errorText='Error happened, please refresh the page' />
+					<Loader active={!fetchError && questionsLoading && preparedQuestions.length === 0} />
 					{!fetchError && !questionsLoading && preparedQuestions.length > 0 && (
 						<div className={styles.listWrapper}>
 							<div className={styles.list}>
@@ -48,7 +51,7 @@ const App = () => {
 									/>
 								))}
 							</div>
-							{submitError && <span className={styles.submissionError}>{submitError}</span>}
+							<SubmitError submitError={submitError} />
 							<Button
 								variant='primary'
 								disabled={!isReadyForSubmit() || submitting}
