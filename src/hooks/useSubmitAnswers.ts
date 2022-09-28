@@ -2,11 +2,10 @@ import * as React from 'react';
 import { ICheckResultItem, CheckResultValueEnum, ICheckResultSubmitItem, submitCheckResults } from '../api';
 
 interface IUseSubmitAnswersProps {
-	items: Array<ICheckResultItem>;
-	preparedItems: Array<ICheckResultItem>;
+	preparedQuestions: Array<ICheckResultItem>;
 }
 
-export const useSubmitAnswers = ({ items, preparedItems }: IUseSubmitAnswersProps) => {
+export const useSubmitAnswers = ({ preparedQuestions }: IUseSubmitAnswersProps) => {
 	const [submitted, setSubmitted] = React.useState<boolean>(false);
 	const [submitError, setSubmitError] = React.useState<string>();
 	const [submitting, setSubmitting] = React.useState<boolean>(false);
@@ -14,8 +13,11 @@ export const useSubmitAnswers = ({ items, preparedItems }: IUseSubmitAnswersProp
 
 	const isReadyForSubmit = React.useCallback(() => {
 		const answerValues = Object.values(answers);
-		return answerValues.length === items?.length || answerValues.some((answer) => answer === CheckResultValueEnum.NO);
-	}, [answers, items?.length]);
+		return (
+			answerValues.length === preparedQuestions?.length ||
+			answerValues.some((answer) => answer === CheckResultValueEnum.NO)
+		);
+	}, [answers, preparedQuestions?.length]);
 
 	const handleSetAnswer = (answer: ICheckResultSubmitItem) => {
 		setAnswers((answers) => ({ ...answers, [answer.checkId]: answer.value }));
@@ -23,17 +25,17 @@ export const useSubmitAnswers = ({ items, preparedItems }: IUseSubmitAnswersProp
 
 	const isItemEnabled = React.useCallback(
 		(id: string): boolean => {
-			if (preparedItems[0].id === id) return true;
+			if (preparedQuestions[0].id === id) return true;
 
-			const currentItemIndex = preparedItems.findIndex((item) => item.id === id);
-			const previousAnswer = preparedItems[currentItemIndex - 1];
+			const currentItemIndex = preparedQuestions.findIndex((item) => item.id === id);
+			const previousAnswer = preparedQuestions[currentItemIndex - 1];
 			return (
 				Object.keys(answers).includes(previousAnswer.id) &&
 				answers[previousAnswer.id] === CheckResultValueEnum.YES &&
 				isItemEnabled(previousAnswer.id)
 			);
 		},
-		[preparedItems, answers]
+		[preparedQuestions, answers]
 	);
 
 	const handleSubmit = React.useCallback(() => {

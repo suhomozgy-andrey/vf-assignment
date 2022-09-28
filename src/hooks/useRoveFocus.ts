@@ -1,6 +1,8 @@
 import * as React from 'react';
 
-const getPreviousElementFromArray = (currentId: string, array: Array<{ id: string; disabled: boolean }>): string => {
+interface IUseRoveFocusArray extends Array<{ id: string; disabled: boolean }> {}
+
+const getPreviousElementFromArray = (currentId: string, array: IUseRoveFocusArray): string => {
 	if (!currentId) return array.find((el) => !el.disabled)?.id ?? '';
 
 	const currentFocusedItemIndex = array.findIndex((el) => el.id === currentId);
@@ -12,7 +14,7 @@ const getPreviousElementFromArray = (currentId: string, array: Array<{ id: strin
 	}
 	return nextFocusedItem.id;
 };
-const getNextElementFromArray = (currentId: string, array: Array<{ id: string; disabled: boolean }>): string => {
+const getNextElementFromArray = (currentId: string, array: IUseRoveFocusArray): string => {
 	if (!currentId) return array.find((el) => !el.disabled)?.id ?? '';
 
 	const currentFocusedItemIndex = array.findIndex((el) => el.id === currentId);
@@ -25,7 +27,7 @@ const getNextElementFromArray = (currentId: string, array: Array<{ id: string; d
 	return nextFocusedItem.id;
 };
 
-export const useRoveFocus = (items: Array<{ id: string; disabled: boolean }>) => {
+export const useRoveFocus = (items: IUseRoveFocusArray) => {
 	const [currentFocus, setCurrentFocus] = React.useState<string>('');
 	const handleKeyDown = React.useCallback(
 		(e: KeyboardEvent) => {

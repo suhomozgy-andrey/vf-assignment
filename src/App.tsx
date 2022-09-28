@@ -2,11 +2,11 @@ import { CheckableResult } from './components/CheckableResult';
 import { Button } from './components/Button';
 import styles from './App.module.scss';
 import { useRoveFocus } from './hooks/useRoveFocus';
-import { useGetItems } from './hooks/useGetItems';
+import { useGetQuestions } from './hooks/useGetQuestions';
 import { useSubmitAnswers } from './hooks/useSubmitAnswers';
 
 const App = () => {
-	const { loading: itemsLoading, error: fetchError, items, preparedItems } = useGetItems();
+	const { loading: questionsLoading, error: fetchError, preparedQuestions } = useGetQuestions();
 	const {
 		answers,
 		isReadyForSubmit,
@@ -17,14 +17,13 @@ const App = () => {
 		submitting,
 		isItemEnabled
 	} = useSubmitAnswers({
-		items,
-		preparedItems
+		preparedQuestions
 	});
 
 	const { currentFocus, setCurrentFocus } = useRoveFocus(
-		preparedItems.map((item) => ({
-			id: item.id,
-			disabled: !isItemEnabled(item.id)
+		preparedQuestions.map((question) => ({
+			id: question.id,
+			disabled: !isItemEnabled(question.id)
 		}))
 	);
 
@@ -33,23 +32,23 @@ const App = () => {
 			{!submitted && (
 				<>
 					{!!fetchError && <div>Error happened, please refresh the page</div>}
-					{!fetchError && itemsLoading && !items && <span>Loading...</span>}
-					{!fetchError && !itemsLoading && items && (
+					{!fetchError && questionsLoading && preparedQuestions.length === 0 && <span>Loading...</span>}
+					{!fetchError && !questionsLoading && preparedQuestions.length > 0 && (
 						<div className={styles.listWrapper}>
 							<div className={styles.list}>
-								{preparedItems.map((resultItem) => (
+								{preparedQuestions.map((question) => (
 									<CheckableResult
 										onAnswerSet={handleSetAnswer}
-										key={resultItem.id}
-										item={resultItem}
-										disabled={!isItemEnabled(resultItem.id)}
+										key={question.id}
+										item={question}
+										disabled={!isItemEnabled(question.id)}
 										setFocus={setCurrentFocus}
-										focus={currentFocus === resultItem.id}
-										answer={answers[resultItem.id]}
+										focus={currentFocus === question.id}
+										answer={answers[question.id]}
 									/>
 								))}
 							</div>
-							{submitError && <>{submitError}</>}
+							{submitError && <span className={styles.submissionError}>{submitError}</span>}
 							<Button
 								variant='primary'
 								disabled={!isReadyForSubmit() || submitting}
