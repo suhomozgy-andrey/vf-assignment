@@ -2,6 +2,12 @@
 
 API was taken from the [veriff-assignment](https://codesandbox.io/s/veriff-assignment-9lvph).
 
+#### Notes
+
+Since original `api.js` included `fetchChecks` responding with data when the following condition is `true` - `Math.random() <= 0.8`, initial data loading might fall into error state.
+
+Same is for result submission - if `Math.random() <= 0.8` is `false` you will se an error message.
+
 ## Available Scripts
 
 In the project directory, you can run:
